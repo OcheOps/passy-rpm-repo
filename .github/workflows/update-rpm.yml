@@ -1,0 +1,28 @@
+name: Update RPM Repo
+
+on:
+  push:
+    paths:
+      - '*.rpm'
+      - '.github/workflows/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Install createrepo
+      run: |
+        sudo apt-get update && sudo apt-get install -y createrepo-c
+        createrepo .
+
+    - name: Commit and push repodata
+      run: |
+        git config user.name "GitHub Actions"
+        git config user.email "actions@github.com"
+        git add repodata
+        git commit -m "Update RPM metadata"
+        git push
